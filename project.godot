@@ -24,6 +24,10 @@ Lobby="*res://scripts/Lobby.gd"
 window/size/viewport_width=900
 window/size/viewport_height=600
 
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
+
 [steam]
 
 initialization/app_id=480
