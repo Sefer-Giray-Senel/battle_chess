@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://6lq17fk7iphv"]
+
+[ext_resource type="PackedScene" uid="uid://cp5u2kn35qsdc" path="res://scenes/Chat.tscn" id="1_ibkli"]
+[ext_resource type="PackedScene" uid="uid://dvqfupgu1m77p" path="res://scenes/Board.tscn" id="1_qbsmt"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Board" parent="HBoxContainer" instance=ExtResource("1_qbsmt")]
+custom_minimum_size = Vector2(512, 512)
+layout_mode = 2
+size_flags_horizontal = 1
+
+[node name="Chat" parent="HBoxContainer" instance=ExtResource("1_ibkli")]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2

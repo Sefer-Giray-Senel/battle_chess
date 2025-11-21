@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3 uid="uid://cyropg0xdy8io"]
+
+[ext_resource type="Script" uid="uid://cx85c05axkal1" path="res://scenes/Popup.gd" id="1_4c2u4"]
+
+[node name="Popup" type="PopupPanel"]
+visible = true
+script = ExtResource("1_4c2u4")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 96.0
+offset_bottom = 96.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="q" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="r" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="b" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="n" type="Button" parent="HBoxContainer"]
+layout_mode = 2

@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://dvqfupgu1m77p"]
+
+[ext_resource type="Script" uid="uid://c2pkomk1hpsd2" path="res://scripts/Board.gd" id="1_qails"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_qails")
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/h_separation = 0
+theme_override_constants/v_separation = 0
+columns = 8
