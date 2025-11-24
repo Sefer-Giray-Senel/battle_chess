@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://cp5u2kn35qsdc"]
+[gd_scene load_steps=5 format=3 uid="uid://cp5u2kn35qsdc"]
 
 [ext_resource type="Script" uid="uid://8ibuxixnksev" path="res://scripts/Chat.gd" id="1_uca72"]
+[ext_resource type="FontFile" uid="uid://dhf76tjptr3ka" path="res://textures/Blaka-Regular.ttf" id="2_loyew"]
+[ext_resource type="StyleBox" uid="uid://csoueac0hekfp" path="res://textures/button_hover.tres" id="3_hxmbp"]
+[ext_resource type="StyleBox" uid="uid://cv8ltfne0egh2" path="res://textures/button.tres" id="4_kowd7"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -21,11 +24,18 @@ script = ExtResource("1_uca72")
 
 [node name="LeaveButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_loyew")
+theme_override_font_sizes/font_size = 50
+theme_override_styles/hover = ExtResource("3_hxmbp")
+theme_override_styles/pressed = ExtResource("3_hxmbp")
+theme_override_styles/normal = ExtResource("4_kowd7")
 text = "Leave Lobby"
 
 [node name="ChatBox" type="RichTextLabel" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_fonts/normal_font = ExtResource("2_loyew")
+theme_override_font_sizes/normal_font_size = 50
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -33,7 +43,14 @@ layout_mode = 2
 [node name="MessageInput" type="LineEdit" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("2_loyew")
+theme_override_font_sizes/font_size = 50
 
 [node name="SendButton" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_loyew")
+theme_override_font_sizes/font_size = 50
+theme_override_styles/hover = ExtResource("3_hxmbp")
+theme_override_styles/pressed = ExtResource("3_hxmbp")
+theme_override_styles/normal = ExtResource("4_kowd7")
 text = "Send"
