@@ -1,31 +1,73 @@
 extends Control
 
-@onready var dropdown = $ModeDropdown
-@onready var log_label = $LogLabel
+# Menu containers
+@onready var platform_menu: VBoxContainer = $PlatformMenu
+@onready var mode_menu: VBoxContainer = $ModeMenu
 
-func _ready():
-	dropdown.clear()
-	dropdown.add_item("LAN")
-	dropdown.add_item("Steam")
-	dropdown.item_selected.connect(_on_dropdown_item_selected)
+# Buttons
+@onready var steam_button: Button = $PlatformMenu/SteamButton
+@onready var lan_button: Button = $PlatformMenu/LanButton
 
-	$HostButton.pressed.connect(_on_host_pressed)
-	$JoinButton.pressed.connect(_on_join_pressed)
+@onready var standard_button: Button = $ModeMenu/StandardButton
+@onready var special_button: Button = $ModeMenu/SpecialButton
+@onready var back_button: Button = $ModeMenu/BackButton
 
+# Stores whether user selected Steam or LAN
+var selected_platform: String = ""
+
+func _ready() -> void:
+	# Connect platform buttons
+	steam_button.pressed.connect(_on_steam_pressed)
+	lan_button.pressed.connect(_on_lan_pressed)
+
+	# Connect mode buttons
+	standard_button.pressed.connect(_on_standard_pressed)
+	special_button.pressed.connect(_on_special_pressed)
+	back_button.pressed.connect(_back_to_platform_menu)
+
+	# Initial state
+	platform_menu.visible = true
+	mode_menu.visible = false
+	
 	Lobby.connect("log_message", Callable(self, "_on_log"))
 	Lobby.connect("chess_lobby_joined", Callable(self, "_on_lobby_joined"))
 
-func _on_dropdown_item_selected(_index: int):
-	Lobby.set_mode(dropdown.get_item_text(dropdown.get_selected_id()))
 
-func _on_host_pressed():
-	Lobby.host()
+# -------------------------
+# PLATFORM SELECTION
+# -------------------------
 
-func _on_join_pressed():
-	Lobby.join()
+func _on_steam_pressed() -> void:
+	selected_platform = "Steam"
+	_show_mode_menu()
 
-func _on_log(msg: String):
-	log_label.append_text(msg + "\n")
+func _on_lan_pressed() -> void:
+	selected_platform = "LAN"
+	_show_mode_menu()
+
+func _show_mode_menu() -> void:
+	platform_menu.visible = false
+	mode_menu.visible = true
+
+func _back_to_platform_menu() -> void:
+	platform_menu.visible = true
+	mode_menu.visible = false
+
+# -------------------------
+# MODE SELECTION
+# -------------------------
+
+func _on_standard_pressed() -> void:
+	_start_game("standard")
+
+func _on_special_pressed() -> void:
+	_start_game("special")
+
+func _start_game(mode: String) -> void:
+	if selected_platform == "Steam":
+		Lobby.start_steam(mode)
+	elif selected_platform == "LAN":
+		Lobby.start_lan(mode)
 
 func _on_lobby_joined():
 	get_tree().change_scene_to_file("res://scenes/Game.tscn")

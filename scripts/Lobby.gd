@@ -73,17 +73,17 @@ func _on_log(msg: String):
 func set_mode(new_mode: String):
 	mode = new_mode
 
-func host():
-	if mode == "LAN":
-		_host_lan()
-	elif mode == "Steam":
-		_host_steam()
-
-func join():
-	if mode == "LAN":
-		_join_lan()
-	elif mode == "Steam":
-		_join_steam()
+#func host():
+	#if mode == "LAN":
+		#_host_lan()
+	#elif mode == "Steam":
+		#_host_steam()
+#
+#func join():
+	#if mode == "LAN":
+		#_join_lan()
+	#elif mode == "Steam":
+		#_join_steam()
 
 func leave():
 	if mode == "LAN":
@@ -127,6 +127,11 @@ func send_roles():
 # =========================================================
 # LAN Implementation
 # =========================================================
+func start_lan(mode: String):
+	set_mode("LAN")
+	if not await _join_lan():
+		_host_lan()
+
 func _host_lan():
 	peer = ENetMultiplayerPeer.new()
 	var err = peer.create_server(PORT, MAX_PLAYERS)
@@ -159,12 +164,12 @@ func _send_broadcast():
 	var msg = "CHESS_HOST"
 	udpServer.put_packet(msg.to_utf8_buffer())
 
-func _join_lan():
+func _join_lan() -> bool:
 	emit_signal("log_message", "LAN: Searching for LAN host...")
 	var err = udpClient.bind(DISCOVERY_PORT)
 	if err != OK:
 		emit_signal("log_message", "LAN: UDP bind failed (error %s)" % err)
-		return
+		return false
 	
 	udpClient.set_broadcast_enabled(true)
 	
@@ -184,11 +189,12 @@ func _join_lan():
 					emit_signal("chess_lobby_joined")
 				else:
 					emit_signal("log_message", "LAN: Failed to connect (error %s)" % err2)
-				return
+				return true
 		await get_tree().process_frame
 		timer += get_process_delta_time()
 	emit_signal("log_message", "LAN: No host found on LAN")
 	udpClient.close()
+	return false
 
 func _leave_lan():
 	broadcast_timer_active = false
@@ -224,6 +230,10 @@ func receive_packet(data: String, from_id: int):
 # =========================================================
 # Steam Implementation
 # =========================================================
+func start_steam(mode: String):
+	set_mode("Steam")
+	_join_steam()
+
 func _host_steam():
 	if steam == null:
 		emit_signal("log_message", "Steam not available")
@@ -299,6 +309,8 @@ func _on_steam_lobby_list(lobbies):
 	emit_signal("log_message", "Lobbies found: %d" % lobbies.size())
 	if lobbies.size() > 0:
 		steam.joinLobby(lobbies[0])
+	else:
+		_host_steam()
 
 func _on_steam_lobby_joined(new_lobby_id, _permissions, _locked, response):
 	if response != 1:
