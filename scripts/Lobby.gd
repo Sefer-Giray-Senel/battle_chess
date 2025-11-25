@@ -6,7 +6,8 @@ const DISCOVERY_PORT := 55555
 const MAX_PLAYERS := 2
 const TIMEOUT_SEC = 2.0
 
-var mode = "LAN"
+var server_mode = "LAN"
+var game_mode = "standard"
 
 # LAN networking
 var peer: ENetMultiplayerPeer
@@ -70,8 +71,9 @@ func _on_log(msg: String):
 # =========================================================
 # PUBLIC API (called from UI or game scene)
 # =========================================================
-func set_mode(new_mode: String):
-	mode = new_mode
+func set_modes(new_server_mode: String, new_game_mode: String):
+	server_mode = new_server_mode
+	game_mode = new_game_mode
 
 #func host():
 	#if mode == "LAN":
@@ -86,9 +88,9 @@ func set_mode(new_mode: String):
 		#_join_steam()
 
 func leave():
-	if mode == "LAN":
+	if server_mode == "LAN":
 		_leave_lan()
-	elif mode == "Steam":
+	elif server_mode == "Steam":
 		_leave_steam()
 
 func send_packet(msg: String, _target_id: int = 0):
@@ -127,8 +129,8 @@ func send_roles():
 # =========================================================
 # LAN Implementation
 # =========================================================
-func start_lan():
-	set_mode("LAN")
+func start_lan(game_mode: String):
+	set_modes("LAN", game_mode)
 	if not await _join_lan():
 		_host_lan()
 
@@ -161,8 +163,11 @@ func _send_broadcast_loop():
 
 func _send_broadcast():
 	emit_signal("log_message", "LAN: Broadcasting server")
-	var msg = "CHESS_HOST"
-	udpServer.put_packet(msg.to_utf8_buffer())
+	var msg = {
+		"id" : "CHESS_HOST",
+		"mode" : game_mode
+	}
+	udpServer.put_packet(JSON.stringify(msg).to_utf8_buffer())
 
 func _join_lan() -> bool:
 	emit_signal("log_message", "LAN: Searching for LAN host...")
@@ -176,8 +181,8 @@ func _join_lan() -> bool:
 	var timer := 0.0
 	while timer < TIMEOUT_SEC:
 		if udpClient.get_available_packet_count() > 0:
-			var data = udpClient.get_packet().get_string_from_utf8()
-			if data == "CHESS_HOST":
+			var data = JSON.parse_string(udpClient.get_packet().get_string_from_utf8())
+			if data.id == "CHESS_HOST" and data.mode == game_mode:
 				var host_ip = udpClient.get_packet_ip()
 				udpClient.close()
 				emit_signal("log_message", "LAN: Found host at %s" % host_ip)
@@ -230,8 +235,8 @@ func receive_packet(data: String, from_id: int):
 # =========================================================
 # Steam Implementation
 # =========================================================
-func start_steam():
-	set_mode("Steam")
+func start_steam(game_mode: String):
+	set_modes("Steam", game_mode)
 	_join_steam()
 
 func _host_steam():
@@ -247,6 +252,7 @@ func _join_steam():
 		return
 	emit_signal("log_message", "Steam: Requesting lobby list...")
 	steam.addRequestLobbyListStringFilter("name", "chessgame61849", Steam.LOBBY_COMPARISON_EQUAL)
+	steam.addRequestLobbyListStringFilter("mode", game_mode, Steam.LOBBY_COMPARISON_EQUAL)
 	steam.requestLobbyList()
 
 func _leave_steam():
@@ -300,6 +306,7 @@ func _on_steam_lobby_created(connectionStatus, new_lobby_id):
 	lobby_id = new_lobby_id
 	steam.setLobbyJoinable(lobby_id, true)
 	steam.setLobbyData(lobby_id, "name", "chessgame61849")
+	steam.setLobbyData(lobby_id, "mode", game_mode)
 	
 	Steam.allowP2PPacketRelay(true)
 	

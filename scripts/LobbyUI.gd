@@ -69,9 +69,9 @@ func _on_mine_pressed() -> void:
 
 func _start_game() -> void:
 	if selected_platform == "Steam":
-		Lobby.start_steam()
+		Lobby.start_steam(selected_mode)
 	elif selected_platform == "LAN":
-		Lobby.start_lan()
+		Lobby.start_lan(selected_mode)
 
 func _on_lobby_joined():
 	#get_tree().change_scene_to_file("res://scenes/Game.tscn")
