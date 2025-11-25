@@ -1,4 +1,5 @@
 extends Control
+class_name Board
 
 const TILE_SIZE = 64
 const SPRINT_SIZE = 16

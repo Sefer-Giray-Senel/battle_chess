@@ -15,6 +15,8 @@ extends Control
 # Stores whether user selected Steam or LAN
 var selected_platform: String = ""
 
+var selected_mode: String = "standard"
+
 func _ready() -> void:
 	# Connect platform buttons
 	steam_button.pressed.connect(_on_steam_pressed)
@@ -22,7 +24,7 @@ func _ready() -> void:
 
 	# Connect mode buttons
 	standard_button.pressed.connect(_on_standard_pressed)
-	special_button.pressed.connect(_on_special_pressed)
+	special_button.pressed.connect(_on_mine_pressed)
 	back_button.pressed.connect(_back_to_platform_menu)
 
 	# Initial state
@@ -58,16 +60,27 @@ func _back_to_platform_menu() -> void:
 # -------------------------
 
 func _on_standard_pressed() -> void:
-	_start_game("standard")
+	selected_mode = "standard"
+	_start_game()
 
-func _on_special_pressed() -> void:
-	_start_game("special")
+func _on_mine_pressed() -> void:
+	selected_mode = "mine"
+	_start_game()
 
-func _start_game(mode: String) -> void:
+func _start_game() -> void:
 	if selected_platform == "Steam":
-		Lobby.start_steam(mode)
+		Lobby.start_steam()
 	elif selected_platform == "LAN":
-		Lobby.start_lan(mode)
+		Lobby.start_lan()
 
 func _on_lobby_joined():
-	get_tree().change_scene_to_file("res://scenes/Game.tscn")
+	#get_tree().change_scene_to_file("res://scenes/Game.tscn")
+	var game_scene := preload("res://scenes/Game.tscn").instantiate()
+	game_scene.mode = selected_mode
+	
+	var tree := get_tree()
+	var old_scene := tree.current_scene
+	
+	tree.root.add_child(game_scene)
+	tree.current_scene = game_scene
+	old_scene.queue_free()

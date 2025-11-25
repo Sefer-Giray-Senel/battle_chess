@@ -4,7 +4,7 @@ extends Node
 const PORT := 2450
 const DISCOVERY_PORT := 55555
 const MAX_PLAYERS := 2
-const TIMEOUT_SEC = 5.0
+const TIMEOUT_SEC = 2.0
 
 var mode = "LAN"
 
@@ -127,7 +127,7 @@ func send_roles():
 # =========================================================
 # LAN Implementation
 # =========================================================
-func start_lan(mode: String):
+func start_lan():
 	set_mode("LAN")
 	if not await _join_lan():
 		_host_lan()
@@ -230,7 +230,7 @@ func receive_packet(data: String, from_id: int):
 # =========================================================
 # Steam Implementation
 # =========================================================
-func start_steam(mode: String):
+func start_steam():
 	set_mode("Steam")
 	_join_steam()
 
