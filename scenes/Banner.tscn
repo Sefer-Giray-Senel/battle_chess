@@ -1,0 +1,54 @@
+[gd_scene load_steps=3 format=3 uid="uid://cog3rjg5m1rho"]
+
+[ext_resource type="Script" uid="uid://ofjsy37a7oae" path="res://scripts/Banner.gd" id="1_3ppa4"]
+[ext_resource type="FontFile" uid="uid://dhf76tjptr3ka" path="res://textures/Blaka-Regular.ttf" id="2_htqfi"]
+
+[node name="Control" type="Control"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -350.0
+offset_bottom = -576.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+script = ExtResource("1_3ppa4")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+offset_bottom = 50.0
+
+[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="PlayerPhoto" type="TextureRect" parent="HBoxContainer/PanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_htqfi")
+theme_override_font_sizes/font_size = 24
+text = "name"
+
+[node name="TimeLabel" type="Label" parent="HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_htqfi")
+theme_override_font_sizes/font_size = 24
+text = "time"
+
+[node name="CapturedPiecesContainer" type="HBoxContainer" parent="HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 10
+theme_override_constants/separation = -15

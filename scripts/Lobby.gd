@@ -54,7 +54,7 @@ func _process(_delta):
 		while steam.getAvailableP2PPacketSize(0) > 0:
 			var pkt = steam.readP2PPacket(1024, 0)
 			if pkt.has("data") and pkt.data.size() > 0:
-				var packet = pkt.data.get_string_from_utf8()
+				var packet = JSON.parse_string(pkt.data.get_string_from_utf8())
 				if packet.type == "chat":
 					emit_signal("message_received", steam.getFriendPersonaName(pkt.remote_steam_id), packet.message, true)
 				elif packet.type == "move":
@@ -129,8 +129,8 @@ func send_roles():
 # =========================================================
 # LAN Implementation
 # =========================================================
-func start_lan(game_mode: String):
-	set_modes("LAN", game_mode)
+func start_lan(new_game_mode: String):
+	set_modes("LAN", new_game_mode)
 	if not await _join_lan():
 		_host_lan()
 
@@ -235,8 +235,8 @@ func receive_packet(data: String, from_id: int):
 # =========================================================
 # Steam Implementation
 # =========================================================
-func start_steam(game_mode: String):
-	set_modes("Steam", game_mode)
+func start_steam(new_game_mode: String):
+	set_modes("Steam", new_game_mode)
 	_join_steam()
 
 func _host_steam():
@@ -287,6 +287,7 @@ func check_lobby_member_changes():
 			if m != steam.getSteamID():
 				print(last_lobby_members, " - ", current_members)
 				emit_signal("message_received", steam.getFriendPersonaName(m), " joined", false)
+				send_roles()
 	
 	# Detect leaves
 	for m in last_lobby_members:

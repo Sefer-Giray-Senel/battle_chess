@@ -33,6 +33,8 @@ var piece_sheet: Texture2D
 
 var move_generator := Moves.new(board_state, white_turn)
 
+@onready var grid: GridContainer = $GridContainer
+
 @onready var promotion_popup = preload("res://scenes/Popup.tscn").instantiate()
 
 func _ready():
@@ -44,7 +46,6 @@ func _ready():
 	Lobby.connect("lobby_left", Callable(self, "_on_lobby_left"))
 	
 	piece_sheet = load("res://assets/pieces.png")
-	var grid = $GridContainer
 	tile_nodes.resize(BOARD_SIZE)
 	for row in range(BOARD_SIZE):
 		tile_nodes[row] = []
@@ -137,7 +138,6 @@ func _update_board_display():
 			_update_tile_visual(row, col)
 
 func _update_tile_visual(row: int, col: int):
-	var grid = $GridContainer
 	var tile = grid.get_node("Tile_%d_%d" % [row, col])
 	var piece = ""
 	if !is_player_white:

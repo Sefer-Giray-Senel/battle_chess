@@ -32,8 +32,6 @@ func _ready() -> void:
 	mode_menu.visible = false
 	
 	Lobby.connect("log_message", Callable(self, "_on_log"))
-	Lobby.connect("chess_lobby_joined", Callable(self, "_on_lobby_joined"))
-
 
 # -------------------------
 # PLATFORM SELECTION
@@ -62,10 +60,12 @@ func _back_to_platform_menu() -> void:
 func _on_standard_pressed() -> void:
 	selected_mode = "standard"
 	_start_game()
+	load_game_scene()
 
 func _on_mine_pressed() -> void:
 	selected_mode = "mine"
 	_start_game()
+	load_game_scene()
 
 func _start_game() -> void:
 	if selected_platform == "Steam":
@@ -73,10 +73,9 @@ func _start_game() -> void:
 	elif selected_platform == "LAN":
 		Lobby.start_lan(selected_mode)
 
-func _on_lobby_joined():
+func load_game_scene():
 	#get_tree().change_scene_to_file("res://scenes/Game.tscn")
 	var game_scene := preload("res://scenes/Game.tscn").instantiate()
-	game_scene.mode = selected_mode
 	
 	var tree := get_tree()
 	var old_scene := tree.current_scene
@@ -84,3 +83,5 @@ func _on_lobby_joined():
 	tree.root.add_child(game_scene)
 	tree.current_scene = game_scene
 	old_scene.queue_free()
+	
+	game_scene.set_mode(selected_mode)

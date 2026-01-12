@@ -30,5 +30,4 @@ func _on_leave_pressed():
 	Lobby.leave()
 
 func _on_lobby_left():
-	Lobby.set_mode("LAN")
 	get_tree().change_scene_to_file("res://scenes/Lobby.tscn")

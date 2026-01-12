@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://6lq17fk7iphv"]
+[gd_scene load_steps=6 format=3 uid="uid://6lq17fk7iphv"]
 
 [ext_resource type="PackedScene" uid="uid://cp5u2kn35qsdc" path="res://scenes/Chat.tscn" id="1_ibkli"]
-[ext_resource type="Script" uid="uid://ccneyp04phnn1" path="res://scenes/Game.gd" id="1_qbsmt"]
+[ext_resource type="Script" uid="uid://ccneyp04phnn1" path="res://scripts/Game.gd" id="1_qbsmt"]
+[ext_resource type="Script" uid="uid://dhe52o5w5beto" path="res://scenes/BoardScreen.gd" id="2_78awf"]
+[ext_resource type="FontFile" uid="uid://dhf76tjptr3ka" path="res://textures/Blaka-Regular.ttf" id="3_cpr0p"]
+[ext_resource type="Script" uid="uid://i64j8gjft32k" path="res://scenes/GameOverScreen.gd" id="5_s0nni"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -14,14 +17,79 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_qbsmt")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="BoardScreen" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+offset_right = 862.0
+offset_bottom = 640.0
+script = ExtResource("2_78awf")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="BoardScreen"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = 822.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 0
 
-[node name="Chat" parent="HBoxContainer" instance=ExtResource("1_ibkli")]
+[node name="VBoxContainer" type="VBoxContainer" parent="BoardScreen/HBoxContainer"]
+custom_minimum_size = Vector2(512, 0)
+layout_mode = 2
+
+[node name="Chat" parent="BoardScreen/HBoxContainer" instance=ExtResource("1_ibkli")]
 custom_minimum_size = Vector2(350, 0)
 layout_mode = 2
+
+[node name="LoadingScreen" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+offset_right = 862.0
+offset_bottom = 640.0
+
+[node name="ColorRect" type="ColorRect" parent="LoadingScreen"]
+layout_mode = 0
+offset_right = 862.0
+offset_bottom = 640.0
+color = Color(0.203922, 0.592157, 0.635294, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LoadingScreen"]
+layout_mode = 0
+offset_right = 862.0
+offset_bottom = 640.0
+
+[node name="Label" type="Label" parent="LoadingScreen/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme_override_fonts/font = ExtResource("3_cpr0p")
+theme_override_font_sizes/font_size = 20
+text = "Loading..."
+
+[node name="GameOverScreen" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+offset_right = 862.0
+offset_bottom = 640.0
+script = ExtResource("5_s0nni")
+
+[node name="ColorRect" type="ColorRect" parent="GameOverScreen"]
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0.203922, 0.592157, 0.635294, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameOverScreen"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="GameOverScreen/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_cpr0p")
+text = "Game Over"
+
+[node name="Button" type="Button" parent="GameOverScreen/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_cpr0p")
+text = "Return To Home"
