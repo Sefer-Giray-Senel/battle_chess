@@ -43,7 +43,6 @@ custom_minimum_size = Vector2(350, 0)
 layout_mode = 2
 
 [node name="LoadingScreen" type="Control" parent="."]
-visible = false
 anchors_preset = 0
 offset_right = 862.0
 offset_bottom = 640.0
@@ -52,7 +51,7 @@ offset_bottom = 640.0
 layout_mode = 0
 offset_right = 862.0
 offset_bottom = 640.0
-color = Color(0.203922, 0.592157, 0.635294, 1)
+color = Color(2.11775e-06, 0.758669, 0.621501, 1)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="LoadingScreen"]
 layout_mode = 0
@@ -64,7 +63,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 6
 theme_override_fonts/font = ExtResource("3_cpr0p")
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 50
 text = "Loading..."
 
 [node name="GameOverScreen" type="Control" parent="."]
@@ -75,6 +74,7 @@ offset_bottom = 640.0
 script = ExtResource("5_s0nni")
 
 [node name="ColorRect" type="ColorRect" parent="GameOverScreen"]
+layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 color = Color(0.203922, 0.592157, 0.635294, 1)

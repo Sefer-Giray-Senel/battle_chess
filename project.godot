@@ -22,7 +22,7 @@ Lobby="*res://scripts/Lobby.gd"
 [display]
 
 window/size/viewport_width=862
-window/size/viewport_height=640
+window/size/viewport_height=512
 window/size/resizable=false
 
 [rendering]
