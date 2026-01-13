@@ -16,3 +16,7 @@ offset_bottom = 40.0
 theme_override_constants/h_separation = 0
 theme_override_constants/v_separation = 0
 columns = 8
+
+[node name="PlayerTimer" type="Timer" parent="."]
+
+[node name="OpponentTimer" type="Timer" parent="."]

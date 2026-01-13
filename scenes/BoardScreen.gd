@@ -30,6 +30,7 @@ func _ready():
 	#$HBoxContainer.move_child(board, 0)
 	
 	Lobby.connect("role_received", Callable(self, "_on_role_received"))
+	board.connect("timer_changed", Callable(self, "_on_timer_changed"))
 
 func _on_role_received(is_player_w: bool):
 	is_white = is_player_w
@@ -41,4 +42,10 @@ func _on_role_received(is_player_w: bool):
 	else:
 		banner_top.update_player_info("White player")
 		banner_bottom.update_player_info("Black player")
-		
+
+func _on_timer_changed(new_time: int, is_player: bool):
+	print(new_time)
+	if is_player:
+		banner_bottom.update_time(new_time)
+	else:
+		banner_top.update_time(new_time)

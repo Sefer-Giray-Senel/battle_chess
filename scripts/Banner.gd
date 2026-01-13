@@ -18,7 +18,7 @@ func _ready():
 	default_player = load("res://assets/default_player.png")
 	
 	update_player_info("Player One (White)")
-	update_time(300)
+	update_time(600)
 	update_captured_pieces(["q", "n", "p", "p", "p", "p", "p", "p", "p", "p", "p"])
 
 func update_player_info(username: String, avatar_texture: Texture = null):

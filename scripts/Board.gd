@@ -10,6 +10,8 @@ const SELECTED_COLOR = Color(0.7, 0.9, 0.4)  # yellow-ish highlight
 const POSSIBLE_COLOR = Color(0.4, 0.7, 0.3)
 const PIECE_TYPES = ["k", "q", "b", "n", "r", "p"]
 
+@export var initial_time := 10 * 60 # 10 minutes
+
 # Board state: empty = "", uppercase = white, lowercase = black
 var board_state = [
 	["r","n","b","q","k","b","n","r"],
@@ -26,6 +28,9 @@ var tile_nodes := []       # 2D array of ColorRects
 var selected_tile: Vector2i = Vector2i(-1, -1)  # row,col of selected piece
 var possible_moves: Array[Vector2i] = []
 
+var player_time := 0
+var opponent_time := 0
+
 var white_turn: bool = true
 var is_player_white: bool = true
 
@@ -37,7 +42,14 @@ var move_generator := Moves.new(board_state, white_turn)
 
 @onready var promotion_popup = preload("res://scenes/Popup.tscn").instantiate()
 
+signal timer_changed(new_time: int, is_player: bool)
+
 func _ready():
+	player_time = initial_time
+	opponent_time = initial_time
+	$PlayerTimer.timeout.connect(_on_player_tick)
+	$OpponentTimer.timeout.connect(_on_opponent_tick)
+	
 	add_child(promotion_popup)
 	promotion_popup.hide()
 	
@@ -65,6 +77,19 @@ func _ready():
 			grid.add_child(tile)
 			tile_nodes[row].append(tile)
 	_update_board_display()
+
+func _on_player_tick():
+	player_time -= 1
+	timer_changed.emit(player_time, true)
+	if player_time <= 0:
+		print("timeout")
+		# TODO GAMEOVER
+
+func _on_opponent_tick():
+	opponent_time -= 1
+	timer_changed.emit(opponent_time, false)
+	if opponent_time <= 0:
+		$OpponentTimer.stop()
 
 func _on_role_received(is_player_w: bool):
 	is_player_white = is_player_w
@@ -97,6 +122,8 @@ func _on_tile_input(event: InputEvent, row: int, col: int):
 				possible_moves.clear()
 				if move_generator.is_checkmate():
 					print("game over")
+				$PlayerTimer.stop()
+				$OpponentTimer.start()
 			else:
 				if piece != "" and _is_piece_turn(piece):
 					selected_tile = Vector2i(row, col)
@@ -126,6 +153,8 @@ func _on_move_received(packet):
 	move_generator.make_move(from, to, packet.special, packet.payload)
 	print("second", packet)
 	white_turn = !white_turn
+	$PlayerTimer.start()
+	$OpponentTimer.stop()
 	_update_board_display()
 
 func _is_piece_turn(piece: String) -> bool:
