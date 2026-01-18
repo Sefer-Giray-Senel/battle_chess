@@ -75,21 +75,28 @@ script = ExtResource("5_s0nni")
 
 [node name="ColorRect" type="ColorRect" parent="GameOverScreen"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-color = Color(0.203922, 0.592157, 0.635294, 1)
+offset_right = 862.0
+offset_bottom = 640.0
+color = Color(0, 0.756863, 0.619608, 0.690196)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="GameOverScreen"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_top = 172.0
+offset_right = 862.0
+offset_bottom = 472.0
 
 [node name="Label" type="Label" parent="GameOverScreen/VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
 theme_override_fonts/font = ExtResource("3_cpr0p")
+theme_override_font_sizes/font_size = 50
 text = "Game Over"
 
 [node name="Button" type="Button" parent="GameOverScreen/VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
 theme_override_fonts/font = ExtResource("3_cpr0p")
+theme_override_font_sizes/font_size = 50
 text = "Return To Home"

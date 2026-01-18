@@ -27,6 +27,7 @@ signal message_received(sender, text: String, colon: bool)
 signal move_received(packet)
 signal role_received(is_white: bool)
 signal lobby_left()
+signal game_over(player_won: bool)
 
 func _ready():
 	if steam:

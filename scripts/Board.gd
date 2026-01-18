@@ -31,6 +31,8 @@ var possible_moves: Array[Vector2i] = []
 var player_time := 0
 var opponent_time := 0
 
+var game_active: bool = false
+
 var white_turn: bool = true
 var is_player_white: bool = true
 
@@ -78,12 +80,19 @@ func _ready():
 			tile_nodes[row].append(tile)
 	_update_board_display()
 
+func game_over(player_won: bool):
+	print("game over")
+	game_active = false
+	Lobby.game_over.emit(player_won)
+
 func _on_player_tick():
 	player_time -= 1
 	timer_changed.emit(player_time, true)
 	if player_time <= 0:
 		print("timeout")
-		# TODO GAMEOVER
+		$PlayerTimer.stop()
+		send_move()
+		game_over(false)
 
 func _on_opponent_tick():
 	opponent_time -= 1
@@ -94,9 +103,12 @@ func _on_opponent_tick():
 func _on_role_received(is_player_w: bool):
 	is_player_white = is_player_w
 	_update_board_display()
+	game_active = true
 
 # Handles tile clicks
 func _on_tile_input(event: InputEvent, row: int, col: int):
+	if not game_active:
+		return
 	if event is InputEventMouseButton and event.pressed:
 		if !is_player_white:
 			row = 7 - row
@@ -135,23 +147,28 @@ func _on_tile_input(event: InputEvent, row: int, col: int):
 		
 		_update_board_display()
 
-func send_move(from, to, special: String = "", payload: String= ""):
+func send_move(from = Vector2i(-1,-1), to = Vector2i(-1,-1), special: String = "", payload: String= ""):
 	var data = {
 		"type": "move",
 		"from": [from[0], from[1]],
 		"to": [to[0], to[1]],
 		"special": special,
-		"payload": payload
+		"payload": payload,
+		"time_left": player_time
 	}
 	var packet = JSON.stringify(data)
 	Lobby.send_packet(packet)
 
 func _on_move_received(packet):
-	print("first", packet)
+	print(packet)
+	opponent_time = packet.time_left
+	timer_changed.emit(opponent_time, false)
+	if packet.time_left == 0:
+		game_over(true)
+		return
 	var from = Vector2i(packet.from[0], packet.from[1])
 	var to = Vector2i(packet.to[0], packet.to[1])
 	move_generator.make_move(from, to, packet.special, packet.payload)
-	print("second", packet)
 	white_turn = !white_turn
 	$PlayerTimer.start()
 	$OpponentTimer.stop()
