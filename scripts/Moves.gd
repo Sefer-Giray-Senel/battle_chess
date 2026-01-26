@@ -218,7 +218,7 @@ func is_promotion(from: Vector2i, to: Vector2i):
 		return true
 	return false
 
-func make_move(from: Vector2i, to: Vector2i, special: String = "", payload: String = ""):
+func make_move(from: Vector2i, to: Vector2i, special: String = "", payload: String = "") -> String:
 	var piece = board[from.x][from.y]
 	
 	# Update castling rights:
@@ -275,6 +275,7 @@ func make_move(from: Vector2i, to: Vector2i, special: String = "", payload: Stri
 	if piece.to_lower() == "p":
 		if to == en_passant_target:
 			# Remove the pawn that moved 2 tiles last turn
+			target_piece = board[en_passant_pawn.x][en_passant_pawn.y]
 			board[en_passant_pawn.x][en_passant_pawn.y] = ""
 	
 	en_passant_target = Vector2i(-1, -1)
@@ -293,6 +294,8 @@ func make_move(from: Vector2i, to: Vector2i, special: String = "", payload: Stri
 	board[from.x][from.y] = ""
 	
 	white_turn = !white_turn
+	
+	return target_piece
 
 func is_checkmate() -> bool:
 	if is_in_check():

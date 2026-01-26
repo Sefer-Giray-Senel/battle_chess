@@ -45,6 +45,7 @@ var move_generator := Moves.new(board_state, white_turn)
 @onready var promotion_popup = preload("res://scenes/Popup.tscn").instantiate()
 
 signal timer_changed(new_time: int, is_player: bool)
+signal piece_captured(type: String, is_player: bool)
 
 func _ready():
 	player_time = initial_time
@@ -120,15 +121,18 @@ func _on_tile_input(event: InputEvent, row: int, col: int):
 			var to = Vector2i(row,col)
 			
 			if to in possible_moves:
+				var captured
 				if move_generator.is_promotion(from, to):
 					var chosen = await promotion_popup.show_and_get_choice()
 					print("promoted to ", chosen)
 					chosen = chosen.to_upper() if white_turn else chosen
-					move_generator.make_move(from, to, "promotion", chosen)
+					captured = move_generator.make_move(from, to, "promotion", chosen)
 					send_move(from, to, "promotion", chosen)
 				else:
-					move_generator.make_move(from, to)
+					captured = move_generator.make_move(from, to)
 					send_move(from, to)
+				if captured != "":
+					piece_captured.emit(captured, false)
 				white_turn = !white_turn
 				selected_tile = Vector2i(-1,-1)
 				possible_moves.clear()
@@ -168,7 +172,9 @@ func _on_move_received(packet):
 		return
 	var from = Vector2i(packet.from[0], packet.from[1])
 	var to = Vector2i(packet.to[0], packet.to[1])
-	move_generator.make_move(from, to, packet.special, packet.payload)
+	var captured = move_generator.make_move(from, to, packet.special, packet.payload)
+	if captured != "":
+		piece_captured.emit(captured, true)
 	white_turn = !white_turn
 	$PlayerTimer.start()
 	$OpponentTimer.stop()

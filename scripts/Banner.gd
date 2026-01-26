@@ -10,6 +10,7 @@ const PIECE_TYPES = ["k", "q", "b", "n", "r", "p"]
 const SPRINT_SIZE = 16
 var piece_sheet: Texture2D
 var default_player: Texture2D
+var captured_pieces: Array = []
 
 var is_white: bool = true
 
@@ -36,7 +37,15 @@ func update_time(time_in_seconds: int):
 	var seconds = time_in_seconds % 60
 	time_label.text = "%02d:%02d" % [minutes, seconds]
 
-func update_captured_pieces(captured_pieces: Array):
+func add_captured_pieces(captured_piece: String):
+	captured_pieces.append(captured_piece.to_lower())
+	captured_pieces.sort_custom(_piece_order)
+	update_captured_pieces(captured_pieces)
+
+func _piece_order(a: String, b: String) -> bool:
+	return PIECE_TYPES.find(a) < PIECE_TYPES.find(b)
+
+func update_captured_pieces(new_captured_pieces: Array):
 	# Clear previous pieces
 	for child in captured_pieces_container.get_children():
 		child.queue_free()

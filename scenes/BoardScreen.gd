@@ -31,6 +31,7 @@ func _ready():
 	
 	Lobby.connect("role_received", Callable(self, "_on_role_received"))
 	board.connect("timer_changed", Callable(self, "_on_timer_changed"))
+	board.connect("piece_captured", Callable(self, "_on_piece_captured"))
 
 func _on_role_received(is_player_w: bool):
 	is_white = is_player_w
@@ -44,8 +45,13 @@ func _on_role_received(is_player_w: bool):
 		banner_bottom.update_player_info("Black player")
 
 func _on_timer_changed(new_time: int, is_player: bool):
-	print(new_time)
 	if is_player:
 		banner_bottom.update_time(new_time)
 	else:
 		banner_top.update_time(new_time)
+
+func _on_piece_captured(type: String, is_player: bool):
+	if is_player:
+		banner_top.add_captured_pieces(type)
+	else:
+		banner_bottom.add_captured_pieces(type)
