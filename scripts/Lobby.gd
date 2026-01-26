@@ -220,8 +220,9 @@ func _on_peer_disconnected(id: int):
 		emit_signal("message_received", "host", " left", false)
 	else:
 		emit_signal("message_received", "guest", " left", false)
-		broadcast_timer_active = true
-		_send_broadcast_loop()
+		#broadcast_timer_active = true
+		#_send_broadcast_loop()
+	game_over.emit(true)
 
 @rpc("any_peer")
 func receive_packet(data: String, from_id: int):
@@ -287,6 +288,7 @@ func check_lobby_member_changes():
 		if not last_lobby_members.has(m):
 			if m != steam.getSteamID():
 				print(last_lobby_members, " - ", current_members)
+				steam.setLobbyJoinable(lobby_id, false)
 				emit_signal("message_received", steam.getFriendPersonaName(m), " joined", false)
 				send_roles()
 	
@@ -295,6 +297,7 @@ func check_lobby_member_changes():
 		if not current_members.has(m):
 			print(last_lobby_members, " - ", current_members)
 			emit_signal("message_received", steam.getFriendPersonaName(m), " left", false)
+			game_over.emit(true)
 	
 	last_lobby_members = current_members
 
