@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cx85c05axkal1" path="res://scripts/Popup.gd" id="1_4c2u4"]
 
 [node name="Popup" type="PopupPanel"]
+canvas_item_default_texture_filter = 0
 visible = true
 script = ExtResource("1_4c2u4")
 
