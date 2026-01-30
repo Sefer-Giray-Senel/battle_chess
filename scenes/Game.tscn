@@ -37,6 +37,7 @@ theme_override_constants/separation = 0
 [node name="VBoxContainer" type="VBoxContainer" parent="BoardScreen/HBoxContainer"]
 custom_minimum_size = Vector2(512, 0)
 layout_mode = 2
+theme_override_constants/separation = 0
 
 [node name="Chat" parent="BoardScreen/HBoxContainer" instance=ExtResource("1_ibkli")]
 custom_minimum_size = Vector2(350, 0)

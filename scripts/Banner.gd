@@ -18,7 +18,7 @@ func _ready():
 	piece_sheet = load("res://assets/pieces.png")
 	default_player = load("res://assets/default_player.png")
 	
-	update_player_info("Player One (White)")
+	update_player_info("...")
 	update_time(600)
 	update_captured_pieces(["q", "n", "p", "p", "p", "p", "p", "p", "p", "p", "p"])
 
