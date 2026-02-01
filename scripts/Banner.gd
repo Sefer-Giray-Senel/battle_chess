@@ -33,7 +33,7 @@ func update_player_info(username: String, avatar_texture: Texture = null):
 
 
 func update_time(time_in_seconds: int):
-	var minutes = time_in_seconds / 60
+	var minutes = floor(time_in_seconds / 60.0)
 	var seconds = time_in_seconds % 60
 	time_label.text = "%02d:%02d" % [minutes, seconds]
 
@@ -51,7 +51,7 @@ func update_captured_pieces(new_captured_pieces: Array):
 		child.queue_free()
 
 	# Display new pieces
-	for piece in captured_pieces:
+	for piece in new_captured_pieces:
 		var piece_texture = get_piece_texture(piece)
 		if piece_texture:
 			var texture_rect = TextureRect.new()
