@@ -137,7 +137,7 @@ func _on_tile_input(event: InputEvent, row: int, col: int):
 				selected_tile = Vector2i(-1,-1)
 				possible_moves.clear()
 				if move_generator.is_checkmate():
-					print("game over")
+					game_over(true)
 				$PlayerTimer.stop()
 				$OpponentTimer.start()
 			else:
@@ -175,6 +175,8 @@ func _on_move_received(packet):
 	var captured = move_generator.make_move(from, to, packet.special, packet.payload)
 	if captured != "":
 		piece_captured.emit(captured, true)
+	if move_generator.is_checkmate():
+			game_over(false)
 	white_turn = !white_turn
 	$PlayerTimer.start()
 	$OpponentTimer.stop()
