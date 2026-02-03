@@ -7,7 +7,7 @@ const BOARD_SIZE = 8
 const BLACK_TILE = Color(0.9, 0.85, 0.8)
 const WHITE_TILE = Color(0.1, 0.3, 0.3)
 const SELECTED_COLOR = Color(0.7, 0.9, 0.4)  # yellow-ish highlight
-const POSSIBLE_COLOR = Color(0.4, 0.7, 0.3)
+const POSSIBLE_COLOR = Color(0.4, 0.7, 0.3, 0.4)
 const PIECE_TYPES = ["k", "q", "b", "n", "r", "p"]
 
 @export var initial_time := 10 * 60 # 10 minutes
@@ -43,6 +43,7 @@ var move_generator := Moves.new(board_state, white_turn)
 @onready var grid: GridContainer = $GridContainer
 
 @onready var promotion_popup = preload("res://scenes/Popup.tscn").instantiate()
+const MOVE_DOT_TEXTURE := preload("res://assets/move_dot.png")
 
 signal timer_changed(new_time: int, is_player: bool)
 signal piece_captured(type: String, is_player: bool)
@@ -204,11 +205,11 @@ func _update_tile_visual(row: int, col: int):
 	var base_color = WHITE_TILE if is_light else BLACK_TILE
 	
 	# Highlights
-	var blend_strength := 0.7  # 0 = only base, 1 = only highlight
+	#var blend_strength := 0.7  # 0 = only base, 1 = only highlight
 	if selected_tile == Vector2i(row, col):
 		tile.color = SELECTED_COLOR
-	elif Vector2i(row, col) in possible_moves:
-		tile.color = base_color.lerp(POSSIBLE_COLOR, blend_strength)
+	#elif Vector2i(row, col) in possible_moves:
+		#tile.color = base_color.lerp(POSSIBLE_COLOR, blend_strength)
 	else:
 		tile.color = base_color
 	
@@ -226,6 +227,17 @@ func _update_tile_visual(row: int, col: int):
 		# Use the helper to get correct subtexture
 		sprite.texture = get_piece_texture(piece)
 
+		tile.add_child(sprite)
+	
+	# Draw dot if selected
+	if Vector2i(row, col) in possible_moves:
+		var sprite = TextureRect.new()
+		#sprite.stretch_mode = TextureRect.STRETCH_SCALE
+		#sprite.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		#sprite.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		#sprite.custom_minimum_size = Vector2(TILE_SIZE, TILE_SIZE)
+		sprite.texture = MOVE_DOT_TEXTURE
+		sprite.modulate = POSSIBLE_COLOR
 		tile.add_child(sprite)
 
 func get_piece_texture(piece: String) -> Texture2D:
