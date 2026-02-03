@@ -49,7 +49,7 @@ func _ready():
 	connect("log_message", Callable(self, "_on_log"))
 
 func _process(_delta):
-	if steam:
+	if steam and steam.isSteamRunning():
 		steam.run_callbacks()
 		# Check for Steam P2P packets
 		while steam.getAvailableP2PPacketSize(0) > 0:
