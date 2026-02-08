@@ -18,19 +18,20 @@ func _ready():
 	piece_sheet = load("res://assets/pieces.png")
 	default_player = load("res://assets/default_player.png")
 	
-	update_player_info("...")
+	update_player_name("...")
+	var avatar_texture
+	var dummy_image: Image = default_player.get_image()
+	avatar_texture = ImageTexture.create_from_image(dummy_image)
+	update_player_photo(avatar_texture)
 	update_time(600)
-	update_captured_pieces(["q", "n", "p", "p", "p", "p", "p", "p", "p", "p", "p"])
+	#update_captured_pieces(["q", "n", "p", "p", "p", "p", "p", "p", "p", "p", "p"])
 
-func update_player_info(username: String, avatar_texture: Texture = null):
-	if avatar_texture == null:
-		var dummy_image: Image = default_player.get_image()
-		avatar_texture = ImageTexture.create_from_image(dummy_image)
+func update_player_name(username: String):
 	player_name_label.text = username
-	player_photo.texture = avatar_texture
-	# In a real game, you might also use GodotSteam to fetch the avatar image async.
-	update_captured_pieces(["q", "n", "p", "p", "p", "p", "p", "p", "p", "p", "p"])
 
+func update_player_photo(avatar_texture: Texture = null):
+	if avatar_texture != null:
+		player_photo.texture = avatar_texture
 
 func update_time(time_in_seconds: int):
 	var minutes = floor(time_in_seconds / 60.0)

@@ -102,7 +102,7 @@ func _on_opponent_tick():
 	if opponent_time <= 0:
 		$OpponentTimer.stop()
 
-func _on_role_received(is_player_w: bool):
+func _on_role_received(is_player_w: bool, _is_lan: bool):
 	is_player_white = is_player_w
 	_update_board_display()
 	game_active = true
@@ -232,10 +232,6 @@ func _update_tile_visual(row: int, col: int):
 	# Draw dot if selected
 	if Vector2i(row, col) in possible_moves:
 		var sprite = TextureRect.new()
-		#sprite.stretch_mode = TextureRect.STRETCH_SCALE
-		#sprite.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		#sprite.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		#sprite.custom_minimum_size = Vector2(TILE_SIZE, TILE_SIZE)
 		sprite.texture = MOVE_DOT_TEXTURE
 		sprite.modulate = POSSIBLE_COLOR
 		tile.add_child(sprite)

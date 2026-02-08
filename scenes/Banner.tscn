@@ -18,6 +18,7 @@ size_flags_vertical = 0
 script = ExtResource("1_3ppa4")
 
 [node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
 offset_right = 512.0
 offset_bottom = 64.0
 color = Color(0.206858, 0.567288, 0.450848, 1)

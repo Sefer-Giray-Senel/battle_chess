@@ -30,19 +30,22 @@ func _ready():
 	#$HBoxContainer.move_child(board, 0)
 	
 	Lobby.connect("role_received", Callable(self, "_on_role_received"))
+	Lobby.connect("set_player_name", Callable(self, "_on_player_name"))
+	Lobby.connect("set_player_image", Callable(self, "_on_player_image"))
 	board.connect("timer_changed", Callable(self, "_on_timer_changed"))
 	board.connect("piece_captured", Callable(self, "_on_piece_captured"))
 
-func _on_role_received(is_player_w: bool):
+func _on_role_received(is_player_w: bool, is_lan: bool):
 	is_white = is_player_w
 	banner_top.is_white = not is_player_w
 	banner_bottom.is_white = is_player_w
-	if is_white:
-		banner_bottom.update_player_info("White player")
-		banner_top.update_player_info("Black player")
-	else:
-		banner_top.update_player_info("White player")
-		banner_bottom.update_player_info("Black player")
+	if is_lan:
+		if is_white:
+			banner_bottom.update_player_info("White player")
+			banner_top.update_player_info("Black player")
+		else:
+			banner_top.update_player_info("White player")
+			banner_bottom.update_player_info("Black player")
 
 func _on_timer_changed(new_time: int, is_player: bool):
 	if is_player:
@@ -55,3 +58,15 @@ func _on_piece_captured(type: String, is_player: bool):
 		banner_top.add_captured_pieces(type)
 	else:
 		banner_bottom.add_captured_pieces(type)
+
+func _on_player_name(player_name: String, is_opponent: bool):
+	if is_opponent:
+		banner_top.update_player_name(player_name)
+	else:
+		banner_bottom.update_player_name(player_name)
+
+func _on_player_image(player_image: Texture, is_opponent: bool):
+	if is_opponent:
+		banner_top.update_player_photo(player_image)
+	else:
+		banner_bottom.update_player_photo(player_image)

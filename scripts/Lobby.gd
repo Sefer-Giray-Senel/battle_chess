@@ -25,7 +25,9 @@ signal log_message(msg: String)
 signal chess_lobby_joined()
 signal message_received(sender, text: String, colon: bool)
 signal move_received(packet)
-signal role_received(is_white: bool)
+signal role_received(is_white: bool, is_lan: bool)
+signal set_player_name(name: String, is_opponent: bool)
+signal set_player_image(image: Texture, is_opponent: bool)
 signal lobby_left()
 signal game_over(player_won: bool)
 
@@ -40,6 +42,7 @@ func _ready():
 			steam.p2p_session_request.connect(_on_steam_p2p_session_request)
 			steam.p2p_session_connect_fail.connect(_on_steam_p2p_session_fail)
 			steam.join_requested.connect(_on_lobby_join_requested)
+			steam.avatar_loaded.connect(_on_avatar_loaded)
 		else:
 			emit_signal("log_message", "Steam API failed to initialize!")
 	
@@ -61,7 +64,7 @@ func _process(_delta):
 				elif packet.type == "move":
 					emit_signal("move_received", packet)
 				elif packet.type == "role":
-					emit_signal("role_received", packet.is_white)
+					emit_signal("role_received", packet.is_white, false)
 		# Check lobby member changes
 		if lobby_id != 0:
 			check_lobby_member_changes()
@@ -112,7 +115,7 @@ func send_packet(msg: String, _target_id: int = 0):
 			steam.sendP2PPacket(m, buf, steam.P2P_SEND_RELIABLE, 0)
 		emit_signal("log_message", "Steam: Sent msg: " + msg)
 
-func send_roles():
+func send_roles(is_lan: bool):
 	var rng = RandomNumberGenerator.new()
 	var data = {
 		"type": "role",
@@ -123,9 +126,15 @@ func send_roles():
 	else:
 		data.is_white = false
 	
-	emit_signal("role_received", not data.is_white)
+	emit_signal("role_received", not data.is_white, is_lan)
 	var packet = JSON.stringify(data)
 	send_packet(packet)
+
+func send_player_name(player_name: String, is_opponent: bool):
+	set_player_name.emit(player_name, is_opponent)
+
+func send_player_image(image: Texture, is_opponent: bool):
+	set_player_image.emit(image, is_opponent)
 
 # =========================================================
 # LAN Implementation
@@ -213,7 +222,7 @@ func _on_peer_connected(id: int):
 	if id != 1:
 		broadcast_timer_active = false
 		emit_signal("message_received", "guest", " joined", false)
-		send_roles()
+		send_roles(true)
 
 func _on_peer_disconnected(id: int):
 	if id == 1:
@@ -232,7 +241,7 @@ func receive_packet(data: String, from_id: int):
 	elif packet.type == "move":
 		emit_signal("move_received", packet)
 	elif packet.type == "role":
-		emit_signal("role_received", packet.is_white)
+		emit_signal("role_received", packet.is_white, true)
 
 # =========================================================
 # Steam Implementation
@@ -290,7 +299,9 @@ func check_lobby_member_changes():
 				print(last_lobby_members, " - ", current_members)
 				steam.setLobbyJoinable(lobby_id, false)
 				emit_signal("message_received", steam.getFriendPersonaName(m), " joined", false)
-				send_roles()
+				send_roles(false)
+				send_player_name(steam.getFriendPersonaName(m), true)
+				load_avatar(m, true)
 	
 	# Detect leaves
 	for m in last_lobby_members:
@@ -300,6 +311,36 @@ func check_lobby_member_changes():
 			game_over.emit(true)
 	
 	last_lobby_members = current_members
+
+func load_avatar(steam_id: int, is_opponent: bool):
+	var handle = steam.getMediumFriendAvatar(steam_id)
+	if handle > 0:
+		_load_avatar_from_handle(handle, is_opponent)
+
+func _load_avatar_from_handle(image_handle: int, is_opponent: bool) -> void:
+	var size := Steam.getImageSize(image_handle)
+	if size.is_empty():
+		return
+
+	var width: int = size["width"]
+	var height: int = size["height"]
+
+	var data := Steam.getImageRGBA(image_handle)
+	if data.is_empty() or not data["success"]:
+		return
+
+	var buffer: PackedByteArray = data["buffer"]
+
+	var image := Image.create_from_data(
+		width,
+		height,
+		false,
+		Image.FORMAT_RGBA8,
+		buffer
+	)
+
+	var texture := ImageTexture.create_from_image(image)
+	send_player_image(texture, is_opponent)
 
 # =========================================================
 # Steam Callbacks
@@ -333,7 +374,14 @@ func _on_steam_lobby_joined(new_lobby_id, _permissions, _locked, response):
 	last_lobby_members = []
 	var member_count = steam.getNumLobbyMembers(lobby_id)
 	for i in range(member_count):
-		last_lobby_members.append(steam.getLobbyMemberByIndex(lobby_id, i))
+		var steam_id = steam.getLobbyMemberByIndex(lobby_id, i)
+		last_lobby_members.append(steam_id)
+		if steam_id != steam.getSteamID():
+			send_player_name(steam.getFriendPersonaName(steam_id), true)
+			load_avatar(steam_id, true)
+		else:
+			send_player_name(steam.getPersonaName(), false)
+			load_avatar(steam_id, false)
 	
 	emit_signal("log_message", "Steam: Joined lobby %s" % str(lobby_id))
 	emit_signal("chess_lobby_joined")
@@ -349,3 +397,33 @@ func _on_steam_p2p_session_request(remote_id):
 
 func _on_steam_p2p_session_fail(remote_id, error):
 	emit_signal("log_message", "Steam: P2P session with %s failed (error %s)" % [str(remote_id), str(error)])
+
+func _on_avatar_loaded(avatar_id: int, size: int, data: Array) -> void:
+	var is_opponent = false;
+	if avatar_id == Steam.getSteamID():
+		is_opponent = true
+
+	# Avatar dimensions based on size
+	var width := 184
+	var height := 184
+
+	if size == Steam.AVATAR_MEDIUM:
+		width = 64
+		height = 64
+	elif size == Steam.AVATAR_SMALL:
+		width = 32
+		height = 32
+
+	# Convert Array → PackedByteArray
+	var byte_data := PackedByteArray(data)
+
+	var image := Image.create_from_data(
+		width,
+		height,
+		false,
+		Image.FORMAT_RGBA8,
+		byte_data
+	)
+
+	var texture := ImageTexture.create_from_image(image)
+	send_player_image(texture, is_opponent)
