@@ -35,17 +35,10 @@ func _ready():
 	board.connect("timer_changed", Callable(self, "_on_timer_changed"))
 	board.connect("piece_captured", Callable(self, "_on_piece_captured"))
 
-func _on_role_received(is_player_w: bool, is_lan: bool):
+func _on_role_received(is_player_w: bool):
 	is_white = is_player_w
 	banner_top.is_white = not is_player_w
 	banner_bottom.is_white = is_player_w
-	if is_lan:
-		if is_white:
-			banner_bottom.update_player_info("White player")
-			banner_top.update_player_info("Black player")
-		else:
-			banner_top.update_player_info("White player")
-			banner_bottom.update_player_info("Black player")
 
 func _on_timer_changed(new_time: int, is_player: bool):
 	if is_player:

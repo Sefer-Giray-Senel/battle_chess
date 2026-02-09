@@ -102,7 +102,7 @@ func _on_opponent_tick():
 	if opponent_time <= 0:
 		$OpponentTimer.stop()
 
-func _on_role_received(is_player_w: bool, _is_lan: bool):
+func _on_role_received(is_player_w: bool):
 	is_player_white = is_player_w
 	_update_board_display()
 	game_active = true

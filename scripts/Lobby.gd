@@ -8,6 +8,7 @@ const TIMEOUT_SEC = 2.0
 
 var server_mode = "LAN"
 var game_mode = "standard"
+var role_is_white = true
 
 # LAN networking
 var peer: ENetMultiplayerPeer
@@ -25,7 +26,7 @@ signal log_message(msg: String)
 signal chess_lobby_joined()
 signal message_received(sender, text: String, colon: bool)
 signal move_received(packet)
-signal role_received(is_white: bool, is_lan: bool)
+signal role_received(is_white: bool)
 signal set_player_name(name: String, is_opponent: bool)
 signal set_player_image(image: Texture, is_opponent: bool)
 signal lobby_left()
@@ -115,18 +116,19 @@ func send_packet(msg: String, _target_id: int = 0):
 			steam.sendP2PPacket(m, buf, steam.P2P_SEND_RELIABLE, 0)
 		emit_signal("log_message", "Steam: Sent msg: " + msg)
 
-func send_roles(is_lan: bool):
+func decide_roles():
 	var rng = RandomNumberGenerator.new()
+	if rng.randi_range(0, 1) == 0:
+		role_is_white = true
+	else:
+		role_is_white = false
+	emit_signal("role_received", role_is_white)
+
+func send_roles():
 	var data = {
 		"type": "role",
-		"is_white": true
+		"is_white": not role_is_white
 	}
-	if rng.randi_range(0, 1) == 0:
-		data.is_white = true
-	else:
-		data.is_white = false
-	
-	emit_signal("role_received", not data.is_white, is_lan)
 	var packet = JSON.stringify(data)
 	send_packet(packet)
 
@@ -154,6 +156,9 @@ func _host_lan():
 	
 	emit_signal("log_message", "LAN: Server hosted on port %d" % PORT)
 	emit_signal("chess_lobby_joined")
+	
+	decide_roles()
+	send_player_name("White player" if role_is_white else "Black Player", false)
 	
 	broadcast_timer_active = true
 	_send_broadcast_loop()
@@ -222,7 +227,8 @@ func _on_peer_connected(id: int):
 	if id != 1:
 		broadcast_timer_active = false
 		emit_signal("message_received", "guest", " joined", false)
-		send_roles(true)
+		send_roles()
+		send_player_name("White player" if not role_is_white else "Black Player", true)
 
 func _on_peer_disconnected(id: int):
 	if id == 1:
@@ -241,7 +247,9 @@ func receive_packet(data: String, from_id: int):
 	elif packet.type == "move":
 		emit_signal("move_received", packet)
 	elif packet.type == "role":
-		emit_signal("role_received", packet.is_white, true)
+		emit_signal("role_received", packet.is_white)
+		send_player_name("White player" if packet.is_white else "Black Player", false)
+		send_player_name("White player" if not packet.is_white else "Black Player", true)
 
 # =========================================================
 # Steam Implementation
@@ -299,7 +307,7 @@ func check_lobby_member_changes():
 				print(last_lobby_members, " - ", current_members)
 				steam.setLobbyJoinable(lobby_id, false)
 				emit_signal("message_received", steam.getFriendPersonaName(m), " joined", false)
-				send_roles(false)
+				send_roles()
 				send_player_name(steam.getFriendPersonaName(m), true)
 				load_avatar(m, true)
 	
@@ -380,6 +388,7 @@ func _on_steam_lobby_joined(new_lobby_id, _permissions, _locked, response):
 			send_player_name(steam.getFriendPersonaName(steam_id), true)
 			load_avatar(steam_id, true)
 		else:
+			decide_roles()
 			send_player_name(steam.getPersonaName(), false)
 			load_avatar(steam_id, false)
 	
