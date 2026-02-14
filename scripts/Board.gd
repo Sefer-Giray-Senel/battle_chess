@@ -8,6 +8,8 @@ const BLACK_TILE = Color(0.9, 0.85, 0.8)
 const WHITE_TILE = Color(0.1, 0.3, 0.3)
 const SELECTED_COLOR = Color(0.7, 0.9, 0.4)  # yellow-ish highlight
 const POSSIBLE_COLOR = Color(0.4, 0.7, 0.3, 0.4)
+const LAST_MOVE_FROM_COLOR = Color(0.0, 0.8, 0.8)
+const LAST_MOVE_TO_COLOR = Color(0.0, 0.7, 0.7)
 const PIECE_TYPES = ["k", "q", "b", "n", "r", "p"]
 
 @export var initial_time := 10 * 60 # 10 minutes
@@ -27,6 +29,8 @@ var board_state = [
 var tile_nodes := []       # 2D array of ColorRects
 var selected_tile: Vector2i = Vector2i(-1, -1)  # row,col of selected piece
 var possible_moves: Array[Vector2i] = []
+var last_move_from: Vector2i = Vector2i(-1, -1)
+var last_move_to: Vector2i = Vector2i(-1, -1)
 
 var player_time := 0
 var opponent_time := 0
@@ -134,6 +138,8 @@ func _on_tile_input(event: InputEvent, row: int, col: int):
 					send_move(from, to)
 				if captured != "":
 					piece_captured.emit(captured, false)
+				last_move_from = from
+				last_move_to = to
 				white_turn = !white_turn
 				selected_tile = Vector2i(-1,-1)
 				possible_moves.clear()
@@ -176,6 +182,8 @@ func _on_move_received(packet):
 	var captured = move_generator.make_move(from, to, packet.special, packet.payload)
 	if captured != "":
 		piece_captured.emit(captured, true)
+	last_move_from = from
+	last_move_to = to
 	if move_generator.is_checkmate():
 			game_over(false)
 	white_turn = !white_turn
@@ -205,11 +213,15 @@ func _update_tile_visual(row: int, col: int):
 	var base_color = WHITE_TILE if is_light else BLACK_TILE
 	
 	# Highlights
-	#var blend_strength := 0.7  # 0 = only base, 1 = only highlight
+	var blend_strength := 0.7  # 0 = only base, 1 = only highlight
 	if selected_tile == Vector2i(row, col):
 		tile.color = SELECTED_COLOR
 	#elif Vector2i(row, col) in possible_moves:
 		#tile.color = base_color.lerp(POSSIBLE_COLOR, blend_strength)
+	elif Vector2i(row, col) == last_move_from:
+		tile.color = base_color.lerp(LAST_MOVE_FROM_COLOR, blend_strength)
+	elif Vector2i(row, col) == last_move_to:
+		tile.color = base_color.lerp(LAST_MOVE_TO_COLOR, blend_strength)
 	else:
 		tile.color = base_color
 	

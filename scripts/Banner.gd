@@ -24,7 +24,6 @@ func _ready():
 	avatar_texture = ImageTexture.create_from_image(dummy_image)
 	update_player_photo(avatar_texture)
 	update_time(600)
-	#update_captured_pieces(["q", "n", "p", "p", "p", "p", "p", "p", "p", "p", "p"])
 
 func update_player_name(username: String):
 	player_name_label.text = username
