@@ -78,6 +78,7 @@ func _start_game() -> void:
 func load_game_scene():
 	#get_tree().change_scene_to_file("res://scenes/Game.tscn")
 	var game_scene := preload("res://scenes/Game.tscn").instantiate()
+	game_scene.get_node("BoardScreen").mode = selected_mode
 	
 	var tree := get_tree()
 	var old_scene := tree.current_scene
@@ -85,5 +86,3 @@ func load_game_scene():
 	tree.root.add_child(game_scene)
 	tree.current_scene = game_scene
 	old_scene.queue_free()
-	
-	game_scene.set_mode(selected_mode)

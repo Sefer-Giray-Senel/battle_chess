@@ -12,9 +12,6 @@ enum GameState {
 
 var state: GameState = GameState.LOADING
 
-func set_mode(mode: String):
-	board.set_mode(mode)
-
 func _ready():
 	set_state(GameState.LOADING)
 	Lobby.connect("chess_lobby_joined", Callable(self, "_on_lobby_joined"))

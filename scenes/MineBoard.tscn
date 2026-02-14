@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3 uid="uid://hyj7u0fkwfn1"]
+
+[ext_resource type="PackedScene" uid="uid://dvqfupgu1m77p" path="res://scenes/Board.tscn" id="1_bmjcq"]
+[ext_resource type="Script" uid="uid://cifnnvr5khg00" path="res://scripts/MineBoard.gd" id="2_0ju2e"]
+
+[node name="Control" instance=ExtResource("1_bmjcq")]
+script = ExtResource("2_0ju2e")
