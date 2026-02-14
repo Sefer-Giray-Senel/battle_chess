@@ -6,8 +6,14 @@ var opponent_mines: Array[Vector2i] = []
 
 var MAX_MINES = 3
 
+var is_placing_mines = false
+
+func _ready():
+	super()
+	
+	Lobby.connect("mine_placement_state", Callable(self, "on_mine_placement_state"))
+
 func _on_move_received(packet):
-	print("MINE")
 	super(packet)
 
 func draw_new_visiuals(piece: String, tile: Node, row: int, col: int):
@@ -18,3 +24,6 @@ func draw_new_visiuals(piece: String, tile: Node, row: int, col: int):
 		tile.add_child(sprite)
 	
 	super(piece, tile, row, col)
+
+func on_mine_placement_state(is_placing: bool):
+	is_placing_mines = is_placing

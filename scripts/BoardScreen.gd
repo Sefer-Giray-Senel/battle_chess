@@ -8,20 +8,21 @@ var mode
 var is_white: bool = true
 
 func _ready():
-	var board
+	var board_scene
+	var banner
+	
 	# Apply the mode script
 	if mode == "mine":
-		var board_scene = preload("res://scenes/MineBoard.tscn")
-		board = board_scene.instantiate()
+		board_scene = preload("res://scenes/MineBoard.tscn")
+		banner = preload("res://scenes/MineBanner.tscn")
+		banner_top = banner.instantiate()
 	elif mode == "standard":
-		var board_scene = preload("res://scenes/Board.tscn")
-		board = board_scene.instantiate()
+		board_scene = preload("res://scenes/Board.tscn")
 	else: 
-		var board_scene = preload("res://scenes/Board.tscn")
-		board = board_scene.instantiate()
+		board_scene = preload("res://scenes/Board.tscn")
 	
-	var banner = preload("res://scenes/Banner.tscn")
-	banner_top = banner.instantiate()
+	banner = preload("res://scenes/Banner.tscn")
+	var board = board_scene.instantiate()
 	banner_bottom = banner.instantiate()
 	
 	var container = $HBoxContainer/VBoxContainer

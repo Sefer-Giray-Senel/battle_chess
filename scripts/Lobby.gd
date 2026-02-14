@@ -33,6 +33,10 @@ signal lobby_left()
 signal game_active()
 signal game_over(player_won: bool)
 
+#mode signals
+@warning_ignore("unused_signal")
+signal mine_placement_state(is_placing: bool)
+
 func _ready():
 	if steam:
 		var init = steam.steamInit()

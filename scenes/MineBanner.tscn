@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://b2q05pdr6loiv"]
+
+[ext_resource type="PackedScene" uid="uid://cog3rjg5m1rho" path="res://scenes/Banner.tscn" id="1_gupct"]
+[ext_resource type="Script" uid="uid://e1fs4qhrqcuf" path="res://scripts/MineBanner.gd" id="2_t188p"]
+
+[node name="Control" instance=ExtResource("1_gupct")]
+script = ExtResource("2_t188p")
+
+[node name="Button" type="Button" parent="HBoxContainer" index="3"]
+layout_mode = 2
+text = "M"
