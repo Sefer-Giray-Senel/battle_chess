@@ -2,9 +2,9 @@
 
 [ext_resource type="PackedScene" uid="uid://cp5u2kn35qsdc" path="res://scenes/Chat.tscn" id="1_ibkli"]
 [ext_resource type="Script" uid="uid://ccneyp04phnn1" path="res://scripts/Game.gd" id="1_qbsmt"]
-[ext_resource type="Script" uid="uid://dhe52o5w5beto" path="res://scenes/BoardScreen.gd" id="2_78awf"]
+[ext_resource type="Script" uid="uid://dhe52o5w5beto" path="res://scripts/BoardScreen.gd" id="2_78awf"]
 [ext_resource type="FontFile" uid="uid://dhf76tjptr3ka" path="res://textures/Blaka-Regular.ttf" id="3_cpr0p"]
-[ext_resource type="Script" uid="uid://i64j8gjft32k" path="res://scenes/GameOverScreen.gd" id="5_s0nni"]
+[ext_resource type="Script" uid="uid://i64j8gjft32k" path="res://scripts/GameOverScreen.gd" id="5_s0nni"]
 
 [node name="Control" type="Control"]
 layout_mode = 3

@@ -3,25 +3,17 @@ extends Control
 var banner_top: Banner
 var banner_bottom: Banner
 
-var mode: String
+var board
 
 var is_white: bool = true
 
 func _ready():
 	var board_scene = preload("res://scenes/Board.tscn")
-	var board = board_scene.instantiate()
+	board = board_scene.instantiate()
 	
 	var banner = preload("res://scenes/Banner.tscn")
 	banner_top = banner.instantiate()
 	banner_bottom = banner.instantiate()
-	
-	# Apply the mode script
-	if mode == "mine":
-		board.set_script(load("res://scripts/MineBoard.gd"))
-	elif mode == "standard":
-		board.set_script(load("res://scripts/Board.gd"))
-	else: 
-		board.set_script(load("res://scripts/Board.gd"))
 	
 	var container = $HBoxContainer/VBoxContainer
 	container.add_child(banner_top)
@@ -34,6 +26,15 @@ func _ready():
 	Lobby.connect("set_player_image", Callable(self, "_on_player_image"))
 	board.connect("timer_changed", Callable(self, "_on_timer_changed"))
 	board.connect("piece_captured", Callable(self, "_on_piece_captured"))
+
+func set_mode(mode: String):
+	# Apply the mode script
+	if mode == "mine":
+		board.set_script(load("res://scripts/MineBoard.gd"))
+	elif mode == "standard":
+		board.set_script(load("res://scripts/Board.gd"))
+	else: 
+		board.set_script(load("res://scripts/Board.gd"))
 
 func _on_role_received(is_player_w: bool):
 	is_white = is_player_w
