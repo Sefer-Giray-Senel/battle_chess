@@ -233,7 +233,10 @@ func _update_tile_visual(row: int, col: int):
 	# Remove any previous piece visuals
 	for child in tile.get_children():
 		child.queue_free()
+	
+	draw_new_visiuals(piece, tile, row, col)
 
+func draw_new_visiuals(piece: String, tile: Node, row: int, col: int):
 	# Draw piece if present
 	if piece != "":
 		var sprite = TextureRect.new()
