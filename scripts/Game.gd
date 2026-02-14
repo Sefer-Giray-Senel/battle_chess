@@ -13,7 +13,7 @@ enum GameState {
 var state: GameState = GameState.LOADING
 
 func set_mode(mode: String):
-	board.mode = mode
+	board.set_mode(mode)
 
 func _ready():
 	set_state(GameState.LOADING)
