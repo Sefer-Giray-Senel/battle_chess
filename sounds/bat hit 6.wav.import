@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cfoj7vp1uruja"
+path="res://.godot/imported/bat hit 6.wav-897a7b51965734cc71252a58e14ba566.sample"
+
+[deps]
+
+source_file="res://sounds/bat hit 6.wav"
+dest_files=["res://.godot/imported/bat hit 6.wav-897a7b51965734cc71252a58e14ba566.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

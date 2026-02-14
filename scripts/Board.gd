@@ -7,7 +7,7 @@ const BOARD_SIZE = 8
 const BLACK_TILE = Color(0.9, 0.85, 0.8)
 const WHITE_TILE = Color(0.1, 0.3, 0.3)
 const SELECTED_COLOR = Color(0.7, 0.9, 0.4)  # yellow-ish highlight
-const POSSIBLE_COLOR = Color(0.4, 0.7, 0.3, 0.4)
+const POSSIBLE_COLOR = Color(0.4, 0.7, 0.3, 0.8)
 const LAST_MOVE_FROM_COLOR = Color(0.0, 0.8, 0.8)
 const LAST_MOVE_TO_COLOR = Color(0.0, 0.7, 0.7)
 const PIECE_TYPES = ["k", "q", "b", "n", "r", "p"]
@@ -141,6 +141,7 @@ func _on_tile_input(event: InputEvent, row: int, col: int):
 					send_move(from, to)
 				if captured != "":
 					piece_captured.emit(captured, false)
+				$AudioStreamPlayer.play()
 				last_move_from = from
 				last_move_to = to
 				white_turn = !white_turn
@@ -185,10 +186,11 @@ func _on_move_received(packet):
 	var captured = move_generator.make_move(from, to, packet.special, packet.payload)
 	if captured != "":
 		piece_captured.emit(captured, true)
+	$AudioStreamPlayer.play()
 	last_move_from = from
 	last_move_to = to
 	if move_generator.is_checkmate():
-			game_over(false)
+		game_over(false)
 	white_turn = !white_turn
 	$PlayerTimer.start()
 	$OpponentTimer.stop()

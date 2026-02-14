@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dvqfupgu1m77p"]
+[gd_scene load_steps=3 format=3 uid="uid://dvqfupgu1m77p"]
 
 [ext_resource type="Script" uid="uid://c2pkomk1hpsd2" path="res://scripts/Board.gd" id="1_qails"]
+[ext_resource type="AudioStream" uid="uid://cfoj7vp1uruja" path="res://sounds/bat hit 6.wav" id="2_hs2ul"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -20,3 +21,7 @@ columns = 8
 [node name="PlayerTimer" type="Timer" parent="."]
 
 [node name="OpponentTimer" type="Timer" parent="."]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_hs2ul")
+bus = &"SFX"

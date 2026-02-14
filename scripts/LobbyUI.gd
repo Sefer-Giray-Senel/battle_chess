@@ -32,6 +32,8 @@ func _ready() -> void:
 	mode_menu.visible = false
 	
 	Lobby.connect("log_message", Callable(self, "_on_log"))
+	
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("SFX"), -20.0)
 
 # -------------------------
 # PLATFORM SELECTION
