@@ -31,5 +31,6 @@ func _on_lobby_joined():
 	set_state(GameState.PLAYING)
 
 func _on_game_over(player_won: bool):
-	game_over.set_player_won(player_won)
-	set_state(GameState.GAME_OVER)
+	if state != GameState.GAME_OVER:
+		game_over.set_player_won(player_won)
+		set_state(GameState.GAME_OVER)
