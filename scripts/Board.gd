@@ -64,6 +64,7 @@ func _ready():
 	Lobby.connect("move_received", Callable(self, "_on_move_received"))
 	Lobby.connect("role_received", Callable(self, "_on_role_received"))
 	Lobby.connect("lobby_left", Callable(self, "_on_lobby_left"))
+	Lobby.connect("game_active", Callable(self, "_on_game_active"))
 	
 	piece_sheet = load("res://assets/pieces.png")
 	tile_nodes.resize(BOARD_SIZE)
@@ -109,6 +110,8 @@ func _on_opponent_tick():
 func _on_role_received(is_player_w: bool):
 	is_player_white = is_player_w
 	_update_board_display()
+
+func _on_game_active():
 	game_active = true
 
 # Handles tile clicks

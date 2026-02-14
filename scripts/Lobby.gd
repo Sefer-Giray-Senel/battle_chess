@@ -30,6 +30,7 @@ signal role_received(is_white: bool)
 signal set_player_name(name: String, is_opponent: bool)
 signal set_player_image(image: Texture, is_opponent: bool)
 signal lobby_left()
+signal game_active()
 signal game_over(player_won: bool)
 
 func _ready():
@@ -229,6 +230,7 @@ func _on_peer_connected(id: int):
 		emit_signal("message_received", "guest", " joined", false)
 		send_roles()
 		send_player_name("White player" if not role_is_white else "Black Player", true)
+		game_active.emit()
 
 func _on_peer_disconnected(id: int):
 	if id == 1:
@@ -250,6 +252,7 @@ func receive_packet(data: String, from_id: int):
 		emit_signal("role_received", packet.is_white)
 		send_player_name("White player" if packet.is_white else "Black Player", false)
 		send_player_name("White player" if not packet.is_white else "Black Player", true)
+		game_active.emit()
 
 # =========================================================
 # Steam Implementation
@@ -310,6 +313,7 @@ func check_lobby_member_changes():
 				send_roles()
 				send_player_name(steam.getFriendPersonaName(m), true)
 				load_avatar(m, true)
+				game_active.emit()
 	
 	# Detect leaves
 	for m in last_lobby_members:
@@ -394,6 +398,7 @@ func _on_steam_lobby_joined(new_lobby_id, _permissions, _locked, response):
 	
 	emit_signal("log_message", "Steam: Joined lobby %s" % str(lobby_id))
 	emit_signal("chess_lobby_joined")
+	game_active.emit()
 
 func _on_lobby_join_requested(this_lobby_id: int, friend_id: int) -> void:
 	var owner_name: String = Steam.getFriendPersonaName(friend_id)
