@@ -72,7 +72,8 @@ func _process(_delta):
 				elif packet.type == "move":
 					emit_signal("move_received", packet)
 				elif packet.type == "role":
-					emit_signal("role_received", packet.is_white, false)
+					emit_signal("role_received", packet.is_white)
+					game_active.emit()
 		# Check lobby member changes
 		if lobby_id != 0:
 			check_lobby_member_changes()
@@ -398,13 +399,12 @@ func _on_steam_lobby_joined(new_lobby_id, _permissions, _locked, response):
 			send_player_name(steam.getFriendPersonaName(steam_id), true)
 			load_avatar(steam_id, true)
 		else:
-			decide_roles()
 			send_player_name(steam.getPersonaName(), false)
 			load_avatar(steam_id, false)
-	
+	if steam.getLobbyOwner(lobby_id) == steam.getSteamID():
+		decide_roles()
 	emit_signal("log_message", "Steam: Joined lobby %s" % str(lobby_id))
 	emit_signal("chess_lobby_joined")
-	game_active.emit()
 
 func _on_lobby_join_requested(this_lobby_id: int, friend_id: int) -> void:
 	var owner_name: String = Steam.getFriendPersonaName(friend_id)
