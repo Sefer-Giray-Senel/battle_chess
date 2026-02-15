@@ -40,7 +40,9 @@ func get_possible_mine_tiles(is_player_white: bool) -> Array[Vector2i]:
 		var result: Array[Vector2i] = []
 		for row in range(furthest_row, 8):
 			for col in range(8):
-				result.append(Vector2i(row, col))
+				var piece: String = board[row][col]
+				if piece == "" or piece.to_upper() == piece:
+					result.append(Vector2i(row, col))
 		
 		return result
 	
@@ -61,6 +63,8 @@ func get_possible_mine_tiles(is_player_white: bool) -> Array[Vector2i]:
 		var result: Array[Vector2i] = []
 		for row in range(0, furthest_row + 1):
 			for col in range(8):
-				result.append(Vector2i(row, col))
+				var piece: String = board[row][col]
+				if piece == "" or piece.to_lower() == piece:
+					result.append(Vector2i(row, col))
 		
 		return result
