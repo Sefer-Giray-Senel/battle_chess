@@ -62,29 +62,40 @@ func after_move(from: Vector2i, to: Vector2i, opponent_move: bool):
 	if from != Vector2i(-1,-1):
 		last_move_from = from
 		last_move_to = to
+	else:
+		last_move_from = Vector2i(-1, -1)
+		last_move_to = Vector2i(-1, -1)
 	if not opponent_move:
 		selected_tile = Vector2i(-1,-1)
 		possible_moves.clear()
 	
 	if opponent_move:
 		if to in player_mines:
-			piece_captured.emit(board_state[to.x][to.y], false)
+			var captured: String = board_state[to.x][to.y]
 			board_state[to.x][to.y] = ""
 			player_mines.erase(to)
 			#TODO sound and visiual effects
+			if captured.to_lower() == "k":
+				game_over(opponent_move)
+				return
+			piece_captured.emit(captured, false)
 			if move_generator.is_checkmate():
-				game_over(!opponent_move)
+				game_over(opponent_move)
 				return
 			elif move_generator.is_in_check():
 				return
 	else:
 		if to in opponent_mines:
-			piece_captured.emit(board_state[to.x][to.y], true)
+			var captured: String = board_state[to.x][to.y]
 			board_state[to.x][to.y] = ""
 			opponent_mines.erase(to)
 			#TODO sound and visiual effects
+			if captured.to_lower() == "k":
+				game_over(opponent_move)
+				return
+			piece_captured.emit(captured, true)
 			if move_generator.is_checkmate():
-				game_over(!opponent_move)
+				game_over(opponent_move)
 				return
 			elif move_generator.is_in_check():
 				return
