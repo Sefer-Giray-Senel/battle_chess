@@ -45,6 +45,8 @@ func process_input(row: int, col: int):
 	if is_placing_mines:
 		var from = Vector2i(-1, -1)
 		var to = Vector2i(row, col)
+		if to not in possible_moves:
+			return
 		move_generator.make_move(from, to, "mine", "self")
 		player_placed_num = player_placed_num + 1
 		Lobby.mine_placement_state.emit(false)
