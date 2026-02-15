@@ -9,7 +9,7 @@ extends Control
 @onready var lan_button: Button = $PlatformMenu/LanButton
 
 @onready var standard_button: Button = $ModeMenu/StandardButton
-@onready var special_button: Button = $ModeMenu/SpecialButton
+@onready var mine_button: Button = $ModeMenu/MineButton
 @onready var back_button: Button = $ModeMenu/BackButton
 
 # Stores whether user selected Steam or LAN
@@ -24,7 +24,7 @@ func _ready() -> void:
 
 	# Connect mode buttons
 	standard_button.pressed.connect(_on_standard_pressed)
-	special_button.pressed.connect(_on_mine_pressed)
+	mine_button.pressed.connect(_on_mine_pressed)
 	back_button.pressed.connect(_back_to_platform_menu)
 
 	# Initial state
