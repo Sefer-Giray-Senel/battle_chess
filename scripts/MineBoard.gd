@@ -104,8 +104,9 @@ func send_move(from = Vector2i(-1,-1), to = Vector2i(-1,-1), special: String = "
 	super(from, to, special, payload)
 
 func _on_role_received(is_player_w: bool):
-	if !is_player_w:
-		Lobby.mine_button_state.emit(true)
-	else: 
-		Lobby.mine_button_state.emit(false)
 	super(is_player_w)
+
+func _on_game_active():
+	if is_player_white:
+		Lobby.mine_button_state.emit(false)
+	super()
