@@ -36,6 +36,8 @@ signal game_over(player_won: bool)
 #mode signals
 @warning_ignore("unused_signal")
 signal mine_placement_state(is_placing: bool)
+@warning_ignore("unused_signal")
+signal mine_button_state(disabled: bool)
 
 func _ready():
 	if steam:

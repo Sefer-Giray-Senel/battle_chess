@@ -9,7 +9,7 @@ func _ready():
 	$HBoxContainer/Button.disabled = true
 	
 	Lobby.connect("mine_placement_state", Callable(self, "_mine_placement_state"))
-	Lobby.connect("game_active", Callable(self, "_on_game_active"))
+	Lobby.connect("mine_button_state", Callable(self, "_on_mine_button_state"))
 
 func on_mine_button_pressed():
 	Lobby.mine_placement_state.emit(!is_placing)
@@ -21,5 +21,5 @@ func _mine_placement_state(new_is_placing: bool):
 	else:
 		$HBoxContainer/Button.text = "M"
 
-func _on_game_active():
-	$HBoxContainer/Button.disabled = false
+func _on_mine_button_state(disabled: bool):
+	$HBoxContainer/Button.disabled = disabled

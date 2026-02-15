@@ -42,7 +42,7 @@ var is_player_white: bool = true
 
 var piece_sheet: Texture2D
 
-var move_generator := Moves.new(board_state, white_turn)
+var move_generator
 
 @onready var grid: GridContainer = $GridContainer
 
@@ -53,6 +53,7 @@ signal timer_changed(new_time: int, is_player: bool)
 signal piece_captured(type: String, is_player: bool)
 
 func _ready():
+	move_generator = _create_move_generator()
 	player_time = initial_time
 	opponent_time = initial_time
 	$PlayerTimer.timeout.connect(_on_player_tick)
@@ -87,9 +88,14 @@ func _ready():
 			tile_nodes[row].append(tile)
 	_update_board_display()
 
+func _create_move_generator():
+	return Moves.new(board_state, white_turn)
+
 func game_over(player_won: bool):
 	print("game over")
 	game_active = false
+	$PlayerTimer.stop()
+	$OpponentTimer.stop()
 	Lobby.game_over.emit(player_won)
 
 func _on_player_tick():
@@ -122,45 +128,59 @@ func _on_tile_input(event: InputEvent, row: int, col: int):
 		if !is_player_white:
 			row = 7 - row
 			col = 7 - col
-		var piece = board_state[row][col]
+		process_input(row, col)
+
+func process_input(row: int, col: int):
+	var piece = board_state[row][col]
 		
-		if selected_tile != Vector2i(-1,-1):
-			var from = selected_tile
-			var to = Vector2i(row,col)
-			
-			if to in possible_moves:
-				var captured
-				if move_generator.is_promotion(from, to):
-					var chosen = await promotion_popup.show_and_get_choice()
-					print("promoted to ", chosen)
-					chosen = chosen.to_upper() if white_turn else chosen
-					captured = move_generator.make_move(from, to, "promotion", chosen)
-					send_move(from, to, "promotion", chosen)
-				else:
-					captured = move_generator.make_move(from, to)
-					send_move(from, to)
-				if captured != "":
-					piece_captured.emit(captured, false)
-				$AudioStreamPlayer.play()
-				last_move_from = from
-				last_move_to = to
-				white_turn = !white_turn
-				selected_tile = Vector2i(-1,-1)
-				possible_moves.clear()
-				if move_generator.is_checkmate():
-					game_over(true)
-				$PlayerTimer.stop()
-				$OpponentTimer.start()
-			else:
-				if piece != "" and _is_piece_turn(piece):
-					selected_tile = Vector2i(row, col)
-					possible_moves = move_generator.get_possible_legal_moves(row, col)
+	if selected_tile != Vector2i(-1,-1):
+		var from = selected_tile
+		var to = Vector2i(row,col)
+		
+		if to in possible_moves:
+			apply_move(from, to)
 		else:
 			if piece != "" and _is_piece_turn(piece):
 				selected_tile = Vector2i(row, col)
 				possible_moves = move_generator.get_possible_legal_moves(row, col)
-		
-		_update_board_display()
+	else:
+		if piece != "" and _is_piece_turn(piece):
+			selected_tile = Vector2i(row, col)
+			possible_moves = move_generator.get_possible_legal_moves(row, col)
+	
+	_update_board_display()
+
+func apply_move(from: Vector2i, to: Vector2i):
+	var captured
+	if move_generator.is_promotion(from, to):
+		var chosen = await promotion_popup.show_and_get_choice()
+		print("promoted to ", chosen)
+		chosen = chosen.to_upper() if white_turn else chosen
+		captured = move_generator.make_move(from, to, "promotion", chosen)
+		send_move(from, to, "promotion", chosen)
+	else:
+		captured = move_generator.make_move(from, to)
+		send_move(from, to)
+	if captured != "":
+		piece_captured.emit(captured, false)
+	$AudioStreamPlayer.play()
+	after_move(from, to, false)
+
+func after_move(from: Vector2i, to: Vector2i, opponent_move: bool):
+	last_move_from = from
+	last_move_to = to
+	change_turn()
+	if not opponent_move:
+		selected_tile = Vector2i(-1,-1)
+		possible_moves.clear()
+	if opponent_move:
+		$PlayerTimer.start()
+		$OpponentTimer.stop()
+	else:
+		$PlayerTimer.stop()
+		$OpponentTimer.start()
+	if move_generator.is_checkmate():
+		game_over(!opponent_move)
 
 func send_move(from = Vector2i(-1,-1), to = Vector2i(-1,-1), special: String = "", payload: String= ""):
 	var data = {
@@ -187,14 +207,12 @@ func _on_move_received(packet):
 	if captured != "":
 		piece_captured.emit(captured, true)
 	$AudioStreamPlayer.play()
-	last_move_from = from
-	last_move_to = to
-	if move_generator.is_checkmate():
-		game_over(false)
-	white_turn = !white_turn
-	$PlayerTimer.start()
-	$OpponentTimer.stop()
+	after_move(from, to, true)
 	_update_board_display()
+
+func change_turn():
+	white_turn = !white_turn
+	move_generator.set_turn(white_turn)
 
 func _is_piece_turn(piece: String) -> bool:
 	var is_white = piece == piece.to_upper()

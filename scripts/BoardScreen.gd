@@ -18,8 +18,12 @@ func _ready():
 		banner_top = banner.instantiate()
 	elif mode == "standard":
 		board_scene = preload("res://scenes/Board.tscn")
+		banner = preload("res://scenes/Banner.tscn")
+		banner_top = banner.instantiate()
 	else: 
 		board_scene = preload("res://scenes/Board.tscn")
+		banner = preload("res://scenes/Banner.tscn")
+		banner_top = banner.instantiate()
 	
 	banner = preload("res://scenes/Banner.tscn")
 	var board = board_scene.instantiate()

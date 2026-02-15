@@ -20,6 +20,9 @@ func _init(board_state, white_turn_now):
 	board = board_state
 	white_turn = white_turn_now
 
+func set_turn(is_white_turn: bool):
+	white_turn = is_white_turn
+
 # Returns an array of Vector2i positions the piece at (row,col) can legally move to
 func get_possible_moves(row: int, col: int) -> Array[Vector2i]:
 	var piece = board[row][col]
@@ -197,7 +200,6 @@ func get_possible_legal_moves(row: int, col: int) -> Array[Vector2i]:
 	for move in moves:
 		var testBoard = Moves.new(deep_copy_state(board), white_turn);
 		testBoard.make_move(Vector2i(row, col), move, "")
-		testBoard.white_turn = !testBoard.white_turn
 		if not testBoard.is_in_check():
 			legal_moves.append(move)
 	return legal_moves
@@ -292,8 +294,6 @@ func make_move(from: Vector2i, to: Vector2i, special: String = "", payload: Stri
 	else:
 		board[to.x][to.y] = board[from.x][from.y]
 	board[from.x][from.y] = ""
-	
-	white_turn = !white_turn
 	
 	return target_piece
 
